@@ -210,6 +210,12 @@ def draw_grid(surface, grid, row, col):
             (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
             BLOCK_SIZE, BLOCK_SIZE), 0)
 
+    # creates a red border around the play area
+    pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
+                        PLAY_WIDTH, PLAY_HEIGHT), 4)
+
+    # updates the screen
+    pygame.display.update()
 
 def clear_rows(grid, locked):
     pass
