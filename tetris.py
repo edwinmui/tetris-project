@@ -155,6 +155,10 @@ class Piece(object):
         self.rotation = 0
 
 def create_grid(locked_positions={}):
+    """ 
+    EFFECTS: Creates and returns a newly constructed grid, which is a 
+                2D array of colors meant to represent a Tetris grid
+    """
     # creates a blank grid
     grid = [[(0, 0, 0) for x in range(10)] for x in range(20)]
     # looks through grid and checks if key exists in each slot
@@ -165,6 +169,13 @@ def create_grid(locked_positions={}):
                 grid[i][j] = c
     return grid
 
+def get_grid_width(grid):
+    # returns the width of the grid
+    return len(grid[0])
+
+def get_grid_height(grid):
+    # returns the length of the grid
+    return len(grid)
 
 def convert_shape_format(shape):
     pass
@@ -182,16 +193,23 @@ def get_shape():
 def draw_text_middle(text, size, color, surface):  
     pass
    
-def draw_grid(surface, row, col):
+def draw_grid(surface, grid, row, col):
     surface.fill(0, 0, 0)
 
     pygame.font.init()
-    font = pygame.font.Sysfont('centurygothic', 60)
+    font = pygame.font.SysFont('centurygothic', 60)
     label = font.render('Tetris', 1, (255, 255, 255))
 
     # gets to the middle of the grid
     surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
     
+    # draws the rectangles on the grid
+    for row in get_grid_height(grid):
+        for col in get_grid_width(grid):
+            pygame.draw.rect(surface, grid[row][col], 
+            (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
+            BLOCK_SIZE, BLOCK_SIZE), 0)
+
 
 def clear_rows(grid, locked):
     pass
