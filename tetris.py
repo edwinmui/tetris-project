@@ -188,22 +188,13 @@ def check_lost(positions):
 
 def get_shape():
     # returns a random shape
-    return random.choice(shapes)
+    return Piece(5, 0, random.choice(shapes))
 
 def draw_text_middle(text, size, color, surface):  
     pass
    
-def draw_grid(surface, grid, row, col):
-    surface.fill(0, 0, 0)
-
-    pygame.font.init()
-    font = pygame.font.SysFont('centurygothic', 60)
-    label = font.render('Tetris', 1, (255, 255, 255))
-
-    # gets to the middle of the grid
-    surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
-    
-    # draws the rectangles on the grid
+def draw_grid(surface, grid):
+    # draws the rectangles on the surface
     for row in get_grid_height(grid):
         for col in get_grid_width(grid):
             pygame.draw.rect(surface, grid[row][col], 
@@ -214,22 +205,76 @@ def draw_grid(surface, grid, row, col):
     pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
                         PLAY_WIDTH, PLAY_HEIGHT), 4)
 
-    # updates the screen
-    pygame.display.update()
-
 def clear_rows(grid, locked):
     pass
 
 def draw_next_shape(shape, surface):
     pass
 
-def draw_window(surface):
+def draw_window(surface, grid):
+    # fills the surface with blank RGB values
+    surface.fill(0, 0, 0)
+
+    pygame.font.init()
+    font = pygame.font.SysFont('centurygothic', 60)
+    label = font.render('Tetris', 1, (255, 255, 255))
+
+    # gets to the middle of the grid
+    surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
+
+    # draws the grid
+    draw_grid(surface, grid)
+    # updates the screen
+    pygame.display.update()
+
+def main(win):
+
+    locked_positions = {}
+    grid = create_grid()
+
+    change_piece = False
+    run = True
+    current_piece = get_shape()
+    next_piece = get_shape()
+    clock = pygame.time.Clock()
+    fall_time = 0
+
+    # continues to run the game untl the user quits
+    while run:
+        for event in pygame.event.get():
+            # if the user wants to quit, exits the program
+            if event.type == pygame.QUIT:
+                run = False
+
+            # checks what the user presses down a key
+            if event.type == pygame.KEYDOWN:
+                # checks different cases and verifies that movement is valid
+                if event.key == pygame.K_LEFT:
+                    current_piece.x -= 1
+                    if not(valid_space(current_piece, grid)):
+                        current_piece.x += 1
+
+                if event.key == pygame.K_RIGHT:
+                    current_piece.x += 1
+                    if not(valid_space(current_piece, grid)):
+                        current_piece.x -= 1
+
+                if event.key == pygame.K_DOWN:
+                    current_piece.y += 1
+                    if not(valid_space(current_piece, grid)):
+                        current_piece.y -= 1
+
+                if event.key == pygame.K_UP:
+                    current_piece.rotation += 1
+                    if not(valid_space(current_piece, grid)):
+                        current_piece.rotation -= 1
+
+    draw_window(win, grid)
+                    
+def main_menu(win):
+    main(win)
     pass
 
-def main():
-    pass
-
-def main_menu():
-    pass
-
-main_menu()  # start game
+win = pygame.display.set_mode(S_WIDTH, S_HEIGHT)
+pygame.display.set_caption('Tetris')
+main_menu(win)  # start game

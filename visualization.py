@@ -11,7 +11,7 @@ def main():
 
     DISPLAY.fill(WHITE)
 
-    pygame.draw.rect(DISPLAY,BLUE,(50,50,100,50))
+    pygame.draw.rect(DISPLAY,BLUE,(50,50,100,50), 4)
 
     while True:
         for event in pygame.event.get():
