@@ -25,8 +25,16 @@ PLAY_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 PLAY_HEIGHT = 600  # meaning 600 // 20 = 20 height per block
 BLOCK_SIZE = 30
 
-top_left_x = (S_WIDTH - PLAY_WIDTH) // 2
-top_left_y = S_HEIGHT - PLAY_HEIGHT
+top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
+top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
+
+RED = (255,0,0)
+GREEN = (0,255,0)
+BLUE = (0,0,255)
+DARK_BLUE = (0,0,128)
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+PINK = (255,200,200)
 
 
 # SHAPE FORMATS
@@ -194,16 +202,16 @@ def draw_text_middle(text, size, color, surface):
     pass
    
 def draw_grid(surface, grid):
-    # draws the rectangles on the surface
-    for row in get_grid_height(grid):
-        for col in get_grid_width(grid):
-            pygame.draw.rect(surface, grid[row][col], 
-            (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
-            BLOCK_SIZE, BLOCK_SIZE), 0)
+    # draws the gridlines onto the window
+    sx = top_left_x
+    sy = top_left_y
 
-    # creates a red border around the play area
-    pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
-                        PLAY_WIDTH, PLAY_HEIGHT), 4)
+    # draws a line on every row
+    for row in get_grid_height:
+        pygame.draw.line(surface, (120, 120, 120), (sx, sy + i * BLOCK_SIZE),
+                (sx + PLAY_WIDTH, sy + i * BLOCK_SIZE))
+        for col in get_grid_width:
+
 
 def clear_rows(grid, locked):
     pass
@@ -221,6 +229,17 @@ def draw_window(surface, grid):
 
     # gets to the middle of the grid
     surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
+
+    # draws the rectangles on the surface
+    for row in get_grid_height(grid):
+        for col in get_grid_width(grid):
+            pygame.draw.rect(surface, grid[row][col], 
+            (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
+            BLOCK_SIZE, BLOCK_SIZE), 0)
+
+    # creates a red border around the play area
+    pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
+                        PLAY_WIDTH, PLAY_HEIGHT), 4)
 
     # draws the grid
     draw_grid(surface, grid)
