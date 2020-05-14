@@ -35,6 +35,7 @@ DARK_BLUE = (0,0,128)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 PINK = (255,200,200)
+GREY = (120, 120, 120)
 
 
 # SHAPE FORMATS
@@ -162,6 +163,14 @@ class Piece(object):
         # numbers from 0-3, default set to zero
         self.rotation = 0
 
+def get_grid_width(grid):
+    # returns the width of the grid
+    return len(grid[0])
+
+def get_grid_height(grid):
+    # returns the length of the grid
+    return len(grid)
+
 def create_grid(locked_positions={}):
     """ 
     EFFECTS: Creates and returns a newly constructed grid, which is a 
@@ -170,20 +179,12 @@ def create_grid(locked_positions={}):
     # creates a blank grid
     grid = [[(0, 0, 0) for x in range(10)] for x in range(20)]
     # looks through grid and checks if key exists in each slot
-    for i in range(len(grid)):
-        for j in range(len(grid[i])):
-            if (j, i) in locked_positions:
-                c = locked_positions[(j, i)]
-                grid[i][j] = c
+    for row in range(get_grid_height()):
+        for col in range(get_grid_width()):
+            if (col, row) in locked_positions:
+                c = locked_positions[(col, row)]
+                grid[row][col] = c
     return grid
-
-def get_grid_width(grid):
-    # returns the width of the grid
-    return len(grid[0])
-
-def get_grid_height(grid):
-    # returns the length of the grid
-    return len(grid)
 
 def convert_shape_format(shape):
     pass
@@ -207,11 +208,13 @@ def draw_grid(surface, grid):
     sy = top_left_y
 
     # draws a line on every row
-    for row in get_grid_height:
-        pygame.draw.line(surface, (120, 120, 120), (sx, sy + i * BLOCK_SIZE),
-                (sx + PLAY_WIDTH, sy + i * BLOCK_SIZE))
-        for col in get_grid_width:
-
+    for row in range(get_grid_height()):
+        # draws horizontal line across entire row
+        pygame.draw.line(surface, GREY, (sx, sy + row * BLOCK_SIZE), 
+                                      (sx + PLAY_WIDTH, sy + row * BLOCK_SIZE))
+        for col in range(get_grid_width()):
+            # draws vertical lines across row
+            pygame.draw.line(surface, GREY, ())
 
 def clear_rows(grid, locked):
     pass
@@ -231,8 +234,8 @@ def draw_window(surface, grid):
     surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
 
     # draws the rectangles on the surface
-    for row in get_grid_height(grid):
-        for col in get_grid_width(grid):
+    for row in range(get_grid_height(grid)):
+        for col in range(get_grid_width(grid)):
             pygame.draw.rect(surface, grid[row][col], 
             (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
             BLOCK_SIZE, BLOCK_SIZE), 0)

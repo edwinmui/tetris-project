@@ -11,6 +11,5 @@ class Test_Grid(unittest.TestCase):
         grid = [[(0, 0, 0) for x in range(10)] for x in range(20)]
         self.assertEqual(get_grid_width(grid), 10)
 
-
 if __name__ == '__main__':
     unittest.main()
