@@ -179,15 +179,37 @@ def create_grid(locked_positions={}):
     # creates a blank grid
     grid = [[(0, 0, 0) for x in range(10)] for x in range(20)]
     # looks through grid and checks if key exists in each slot
-    for row in range(get_grid_height()):
-        for col in range(get_grid_width()):
+    for row in range(get_grid_height(grid)):
+        for col in range(get_grid_width(grid)):
             if (col, row) in locked_positions:
                 c = locked_positions[(col, row)]
                 grid[row][col] = c
     return grid
 
 def convert_shape_format(shape):
-    pass
+    """
+    EFFECTS: Converts the shapes, which are currently strings, into visual
+            in-game Tetris blocks 
+    """
+    # constant vars to help format shapes
+    OFFSET_LEFT = 2
+    OFFSET_UP = 4
+    positions = []
+    # figures out the current rotation of the shape
+    format = shape.shape[shape.rotation % len(shape.shape)]
+
+    # iterates through every line of shape and executes based on
+    for x, line in enumerate(shape):
+        row = list(line)
+        for y, col in enumerate(row):
+            # checks if a block exists at the current string
+            if col == '0':
+                # adds it to our list of current shape positions
+                positions.append((shape.x + x, shape.y + y)
+    
+    # offsets positions of shapes to deal with initial incorrect offset
+    for i, pos in enumerate(positions):
+        positions[i] = (pos[0] - OFFSET_LEFT, pos[1] - OFFSET_UP)
 
 def valid_space(shape, grid):
     pass
@@ -207,14 +229,16 @@ def draw_grid(surface, grid):
     sx = top_left_x
     sy = top_left_y
 
-    # draws a line on every row
-    for row in range(get_grid_height()):
-        # draws horizontal line across entire row
+    # draws horizontal line across every row
+    for row in range(get_grid_height(grid)):
         pygame.draw.line(surface, GREY, (sx, sy + row * BLOCK_SIZE), 
                                       (sx + PLAY_WIDTH, sy + row * BLOCK_SIZE))
-        for col in range(get_grid_width()):
-            # draws vertical lines across row
-            pygame.draw.line(surface, GREY, ())
+
+    # draws vertical line across entire col
+    for col in range(get_grid_width(grid)):
+        pygame.draw.line(surface, GREY, 
+                    (sx + col * BLOCK_SIZE, sy),
+                    (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT)
 
 def clear_rows(grid, locked):
     pass
@@ -297,6 +321,6 @@ def main_menu(win):
     main(win)
     pass
 
-win = pygame.display.set_mode(S_WIDTH, S_HEIGHT)
+win = pygame.display.set_mode((S_WIDTH, S_HEIGHT))
 pygame.display.set_caption('Tetris')
 main_menu(win)  # start game
