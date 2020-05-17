@@ -234,6 +234,10 @@ def valid_space(shape, grid):
     return True
 
 def check_lost(positions):
+    """
+    EFFECTS: Returns whether any of the currently placed blocks are above the 
+             screen, a.k.a. resulting in a loss
+    """
     pass
 
 def get_shape():
