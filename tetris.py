@@ -175,8 +175,8 @@ def create_grid(locked_positions={}):
                 2D array of colors meant to represent a Tetris grid
     """
     # creates a blank grid
-    grid = [[(0, 0, 0) for col in range(GRID_WIDTH)] 
-                        for row in range(GRID_HEIGHT)]
+    grid = [ [(0, 0, 0) for col in range(GRID_WIDTH)]
+                        for row in range(GRID_HEIGHT) ]
     # looks through grid and checks if key exists in each slot
     for row in range(get_grid_height(grid)):
         for col in range(get_grid_width(grid)):
@@ -216,7 +216,22 @@ def valid_space(shape, grid):
     EFFECTS:  Returns whether the current shape is at a valid space within the
               provided grid
     """
-    accepted_pos = [[(col, row) for col in range(get_grid_width(grid))] for row in range(get_grid_height(grid))]
+    # creates a list of all accepted positions
+    accepted_pos = [ [(col, row) for col in range(get_grid_width(grid)) 
+                                if grid[row][col] == (0, 0, 0)]
+                            for row in range(get_grid_height(grid)) ]
+    # flattens out the above 2D list into a 1D list that can iterated over
+    accepted_pos = [col for sub in accepted_pos for col in sub]
+    # formats the positions of shape to be compared
+    formatted_shape_pos = convert_shape_format(shape)
+    # checks if converted shape is accepted
+    for pos in formatted_shape_pos:
+        if pos not in accepted_pos:
+            # checks if the shape is not above the grid; if above grid, OK
+            if pos[1] >= 0:
+                return False
+
+    return True
 
 def check_lost(positions):
     pass

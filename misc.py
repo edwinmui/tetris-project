@@ -1,10 +1,9 @@
 import random
 
 def main():  
-    list_dict = {}
-    random_tup = (0, 0, 0)
-    list_dict[0][0] = random_tup
-    print(list_dict)
+    new_list = [0, 1, 2, 3, 4,
+    5, 6, 7, 8]
+    print(new_list)
 
 if __name__ == "__main__":
     main()
