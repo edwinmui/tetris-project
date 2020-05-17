@@ -24,6 +24,8 @@ S_HEIGHT = 700
 PLAY_WIDTH = 300  # meaning 300 // 10 = 30 width per block
 PLAY_HEIGHT = 600  # meaning 600 // 20 = 20 height per block
 BLOCK_SIZE = 30
+GRID_HEIGHT = 20    # the max valid height of a grid
+GRID_WIDTH = 10     # the max valid width of a grid
 
 top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
 top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
@@ -149,10 +151,6 @@ shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0),
 
 class Piece(object):
     """ Represents a single piece """
-    # the y side 
-    rows = 20 
-    # the x side
-    cols = 10
 
     def __init__(self, col, row, shape):
         """ Initializes a single piece """
@@ -177,13 +175,14 @@ def create_grid(locked_positions={}):
                 2D array of colors meant to represent a Tetris grid
     """
     # creates a blank grid
-    grid = [[(0, 0, 0) for x in range(10)] for x in range(20)]
+    grid = [[(0, 0, 0) for col in range(GRID_WIDTH)] 
+                        for row in range(GRID_HEIGHT)]
     # looks through grid and checks if key exists in each slot
     for row in range(get_grid_height(grid)):
         for col in range(get_grid_width(grid)):
             if (col, row) in locked_positions:
                 c = locked_positions[(col, row)]
-                grid[row][col] = c
+                grid[row][col] = c                                                # POSSIBLE BUG!!!!! FIX LATER
     return grid
 
 def convert_shape_format(shape):
@@ -205,14 +204,19 @@ def convert_shape_format(shape):
             # checks if a block exists at the current string
             if col == '0':
                 # adds it to our list of current shape positions
-                positions.append((shape.x + x, shape.y + y)
+                positions.append((shape.x + x, shape.y + y))
     
     # offsets positions of shapes to deal with initial incorrect offset
     for i, pos in enumerate(positions):
         positions[i] = (pos[0] - OFFSET_LEFT, pos[1] - OFFSET_UP)
 
 def valid_space(shape, grid):
-    pass
+    """
+    REFUIRES: shape is a valid tetris shape, and grid is a valid tetris grid
+    EFFECTS:  Returns whether the current shape is at a valid space within the
+              provided grid
+    """
+    accepted_pos = [[(col, row) for col in range(get_grid_width(grid))] for row in range(get_grid_height(grid))]
 
 def check_lost(positions):
     pass
