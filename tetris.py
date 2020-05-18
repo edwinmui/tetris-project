@@ -198,7 +198,7 @@ def convert_shape_format(shape):
     format = shape.shape[shape.rotation % len(shape.shape)]
 
     # iterates through every line of shape and executes based on
-    for x, line in enumerate(shape):
+    for x, line in enumerate(format):
         row = list(line)
         for y, col in enumerate(row):
             # checks if a block exists at the current string
@@ -209,6 +209,8 @@ def convert_shape_format(shape):
     # offsets positions of shapes to deal with initial incorrect offset
     for i, pos in enumerate(positions):
         positions[i] = (pos[0] - OFFSET_LEFT, pos[1] - OFFSET_UP)
+
+    return positions
 
 def valid_space(shape, grid):
     """
@@ -240,9 +242,9 @@ def check_lost(positions):
     """
     # loops through all positions and checks if y position is still less than 1
     for pos in positions:
-        x, y in pos:
-        if y < 1:
-            return True
+        for x, y in pos:
+            if y < 1:
+                return True
     return False
 
 def get_shape():
@@ -266,7 +268,7 @@ def draw_grid(surface, grid):
     for col in range(get_grid_width(grid)):
         pygame.draw.line(surface, GREY, 
                     (sx + col * BLOCK_SIZE, sy),
-                    (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT)
+                    (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT))
 
 def clear_rows(grid, locked):
     pass
@@ -308,13 +310,29 @@ def main(win):
 
     change_piece = False
     run = True
-    current_piece = get_shape()
+    curr_piece = get_shape()
     next_piece = get_shape()
     clock = pygame.time.Clock()
     fall_time = 0
+    fall_speed = 0.27
+    MILLISECOND = 1000
 
     # continues to run the game untl the user quits
     while run:
+        # updates the grid based on prev locked positions of tetris blocks
+        grid = create_grid(locked_positions)
+        fall_time += clock.get_rawtime()
+
+        if fall_time / MILLISECOND > fall_speed:
+            fall_time = 0
+            curr_piece.y += 1
+            # checks if falling piece hits bottom or another piece
+            if not(valid_space(curr_piece, grid)) and curr_piece.y > 0:
+                # if hits bottom or another piece, switches to the next piece
+                curr_piece.y -= 1
+                change_piece = True
+
+
         for event in pygame.event.get():
             # if the user wants to quit, exits the program
             if event.type == pygame.QUIT:
@@ -324,24 +342,24 @@ def main(win):
             if event.type == pygame.KEYDOWN:
                 # checks different cases and verifies that movement is valid
                 if event.key == pygame.K_LEFT:
-                    current_piece.x -= 1
-                    if not(valid_space(current_piece, grid)):
-                        current_piece.x += 1
+                    curr_piece.x -= 1
+                    if not(valid_space(curr_piece, grid)):
+                        curr_piece.x += 1
 
                 if event.key == pygame.K_RIGHT:
-                    current_piece.x += 1
-                    if not(valid_space(current_piece, grid)):
-                        current_piece.x -= 1
+                    curr_piece.x += 1
+                    if not(valid_space(curr_piece, grid)):
+                        curr_piece.x -= 1
 
                 if event.key == pygame.K_DOWN:
-                    current_piece.y += 1
-                    if not(valid_space(current_piece, grid)):
-                        current_piece.y -= 1
+                    curr_piece.y += 1
+                    if not(valid_space(curr_piece, grid)):
+                        curr_piece.y -= 1
 
                 if event.key == pygame.K_UP:
-                    current_piece.rotation += 1
-                    if not(valid_space(current_piece, grid)):
-                        current_piece.rotation -= 1
+                    curr_piece.rotation += 1
+                    if not(valid_space(curr_piece, grid)):
+                        curr_piece.rotation -= 1
 
     draw_window(win, grid)
                     
