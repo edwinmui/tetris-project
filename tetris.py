@@ -237,8 +237,9 @@ def valid_space(shape, grid):
 
 def check_lost(positions):
     """
-    EFFECTS: Returns whether any of the currently placed blocks are above the 
-             screen, a.k.a. resulting in a loss
+    EFFECTS: Returns whether any of the currently placed blocks in the passed-
+             in locked_positions dictionary are above the screen, 
+             a.k.a. resulting in a loss
     """
     # loops through all positions and checks if y position is still less than 1
     for pos in positions:
@@ -337,6 +338,8 @@ def main(win):
             # if the user wants to quit, exits the program
             if event.type == pygame.QUIT:
                 run = False
+                pygame.display.quit()
+                quit()
 
             # checks what the user presses down a key
             if event.type == pygame.KEYDOWN:
@@ -361,9 +364,32 @@ def main(win):
                     if not(valid_space(curr_piece, grid)):
                         curr_piece.rotation -= 1
 
-    shape_pos = convert_shape_format(current_piece)
+    shape_positions = convert_shape_format(curr_piece)
+
+    # draws the shape onto the grid
+    for i in range(len(shape_positions)):
+        col, row = shape_positions[i]
+        # if piece is not above the screen
+        if row > -1:
+            grid[row][col] = curr_piece.color
+
+    # if piece hits ground, updates locked-grid with corresp piece pos and color
+    if change_piece:
+        for pos in shape_positions:
+            p = (pos[0], pos[1])
+            locked_positions[p] = curr_piece.color
+        # updates the current piece
+        curr_piece = next_piece
+        #updates the next piece and change piece bool
+        next_piece = get_shape()
+        change_piece = False
 
     draw_window(win, grid)
+
+    # check if user lost
+    if check_lost(locked_positions):
+        run = False
+
                     
 def main_menu(win):
     main(win)
