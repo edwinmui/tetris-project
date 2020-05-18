@@ -238,7 +238,12 @@ def check_lost(positions):
     EFFECTS: Returns whether any of the currently placed blocks are above the 
              screen, a.k.a. resulting in a loss
     """
-    pass
+    # loops through all positions and checks if y position is still less than 1
+    for pos in positions:
+        x, y in pos:
+        if y < 1:
+            return True
+    return False
 
 def get_shape():
     # returns a random shape
