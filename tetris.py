@@ -361,6 +361,8 @@ def main(win):
                     if not(valid_space(curr_piece, grid)):
                         curr_piece.rotation -= 1
 
+    shape_pos = convert_shape_format(current_piece)
+
     draw_window(win, grid)
                     
 def main_menu(win):
