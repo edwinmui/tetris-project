@@ -295,12 +295,14 @@ def draw_window(surface, grid):
             (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
             BLOCK_SIZE, BLOCK_SIZE), 0)
 
+
+    # draws the grid
+    draw_grid(surface, grid)
+
     # creates a red border around the play area
     pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
                         PLAY_WIDTH, PLAY_HEIGHT), 4)
 
-    # draws the grid
-    draw_grid(surface, grid)
     # updates the screen
     pygame.display.update()
 
@@ -359,11 +361,11 @@ def main(win):
 
                 elif event.key == pygame.K_UP:
                     # rotates piece one iteratoins
-                    curr_piece.rotation = 
-                    curr_piece.rotation + 1 % len(curr_piece.shape)
+                    curr_piece.rotation = (curr_piece.rotation
+                        + 1 % len(curr_piece.shape))
                     if not(valid_space(curr_piece, grid)):
-                        curr_piece.rotation =
-                        curr_piece.rotation - 1 % len(curr_piece.shape)
+                        curr_piece.rotation = (curr_piece.rotation 
+                            - 1 % len(curr_piece.shape))
 
                 if event.key == pygame.K_DOWN:
                     # moves piece down
@@ -400,8 +402,7 @@ def main(win):
                     
 def main_menu(win):
     main(win)
-    pass
 
 win = pygame.display.set_mode((S_WIDTH, S_HEIGHT))
 pygame.display.set_caption('Tetris')
-main_menu(win)  # start game
+main_menu(win)
