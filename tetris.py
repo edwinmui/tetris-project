@@ -40,8 +40,18 @@ PINK = (255,200,200)
 GREY = (120, 120, 120)
 
 
-# SHAPE FORMATS
+class Piece(object):
+    """ Represents a single piece """
+    def __init__(self, col, row, shape):
+        """ Initializes a single piece """
+        self.x = col
+        self.y = row
+        self.shape = shape
+        self.color = shape_colors[shapes.index(shape)]
+        # numbers from 0-3, default set to zero
+        self.rotation = 0
 
+# SHAPE FORMATS
 S = [['.....',
       '......',
       '..00..',
@@ -144,22 +154,10 @@ T = [['.....',
       '..0..',
       '.....']]
 
+# index 0 - 6 represent shape
 shapes = [S, Z, I, O, J, L, T]
 shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), 
     (255, 165, 0), (0, 0, 255), (128, 0, 128)]
-# index 0 - 6 represent shape
-
-class Piece(object):
-    """ Represents a single piece """
-
-    def __init__(self, col, row, shape):
-        """ Initializes a single piece """
-        self.x = col
-        self.y = row
-        self.shape = shape
-        self.color = shape_colors[shapes.index(shape)]
-        # numbers from 0-3, default set to zero
-        self.rotation = 0
 
 def get_grid_width(grid):
     # returns the width of the grid
@@ -168,6 +166,10 @@ def get_grid_width(grid):
 def get_grid_height(grid):
     # returns the length of the grid
     return len(grid)
+
+def get_num_shape_rotates(shape):
+    # returns the number of rotations a shape has
+    return len(shape.shape)
 
 def create_grid(locked_positions={}):
     """ 
@@ -195,10 +197,10 @@ def convert_shape_format(shape):
     OFFSET_UP = 4
     positions = []
     # figures out the current rotation of the shape
-    format = shape.shape[shape.rotation % len(shape.shape)]
+    shape_format = shape.shape[shape.rotation % get_num_shape_rotates(shape)]
 
     # iterates through every line of shape and executes based on
-    for x, line in enumerate(format):
+    for x, line in enumerate(shape_format):
         row = list(line)
         for y, col in enumerate(row):
             # checks if a block exists at the current string
@@ -249,8 +251,10 @@ def check_lost(positions):
     return False
 
 def get_shape():
+    MIDDLE_GRID_X = 5
+    TOP_GRID_Y = 0
     # returns a random shape
-    return Piece(5, 0, random.choice(shapes))
+    return Piece(MIDDLE_GRID_X, TOP_GRID_Y, random.choice(shapes))
 
 def draw_text_middle(text, size, color, surface):  
     pass
@@ -271,11 +275,42 @@ def draw_grid(surface, grid):
                     (sx + col * BLOCK_SIZE, sy),
                     (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT))
 
+
+
+
 def clear_rows(grid, locked):
     pass
 
+
+
+
 def draw_next_shape(shape, surface):
-    pass
+    """
+    EFFECTS: Shows the upcoming piece in the top right corner of the screen
+    """
+    font = pygame.font.SysFont('centurygothic', 30)
+    # displays text indicating next shape area
+    label = font.render('Next Shape', 1, WHITE)
+    #offset constants to make the next shape look better
+    SHAPE_RIGHT_OFFSET = 50
+    SHAPE_UP_OFFSET = 100
+
+    sx = top_left_x + PLAY_WIDTH + SHAPE_RIGHT_OFFSET
+    sy = top_left_y + PLAY_HEIGHT/2 - SHAPE_UP_OFFSET
+    shape_format = shape.shape[shape.rotation 
+                                     % get_num_shape_rotates(shape)]
+
+    # draws the actual tetris block
+    for i, line in enumerate(shape_format):
+        for j, col in enumerate(line):
+            if col == '0':
+                pygame.draw.rect(surface, shape.color, 
+            (sx + j * BLOCK_SIZE, sy + i * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 
+                0)
+
+    TITLE_RIGHT_OFFSET = 10
+    TITLE_UP_OFFSET = 30
+    surface.blit(label, (sx + TITLE_RIGHT_OFFSET, sy - TITLE_UP_OFFSET))
 
 def draw_window(surface, grid):
     # fills the surface with blank RGB values
@@ -295,14 +330,11 @@ def draw_window(surface, grid):
             (top_left_x + col * BLOCK_SIZE, top_left_y + row * BLOCK_SIZE, 
             BLOCK_SIZE, BLOCK_SIZE), 0)
 
-
     # draws the grid
     draw_grid(surface, grid)
-
     # creates a red border around the play area
     pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
                         PLAY_WIDTH, PLAY_HEIGHT), 4)
-
     # updates the screen
     pygame.display.update()
 
