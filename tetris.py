@@ -305,24 +305,25 @@ def draw_window(surface, grid):
     pygame.display.update()
 
 def main(win):
+    global grid
 
-    locked_positions = {}
-    grid = create_grid()
-
+    locked_positions = {}   # format e.g. "(x, y):(255, 0, 0)"
+    grid = create_grid(locked_positions)
     change_piece = False
     run = True
     curr_piece = get_shape()
     next_piece = get_shape()
     clock = pygame.time.Clock()
     fall_time = 0
-    fall_speed = 0.27
     MILLISECOND = 1000
 
     # continues to run the game untl the user quits
     while run:
+        fall_speed = 0.27
         # updates the grid based on prev locked positions of tetris blocks
         grid = create_grid(locked_positions)
         fall_time += clock.get_rawtime()
+        clock.tick()
 
         if fall_time / MILLISECOND > fall_speed:
             fall_time = 0
@@ -345,24 +346,30 @@ def main(win):
             if event.type == pygame.KEYDOWN:
                 # checks different cases and verifies that movement is valid
                 if event.key == pygame.K_LEFT:
+                    # moves piece left
                     curr_piece.x -= 1
                     if not(valid_space(curr_piece, grid)):
-                        curr_piece.x += 1
+                        curr_piece.x += 1   
 
-                if event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT:
+                    # moves piece right
                     curr_piece.x += 1
                     if not(valid_space(curr_piece, grid)):
                         curr_piece.x -= 1
 
+                elif event.key == pygame.K_UP:
+                    # rotates piece one iteratoins
+                    curr_piece.rotation = 
+                    curr_piece.rotation + 1 % len(curr_piece.shape)
+                    if not(valid_space(curr_piece, grid)):
+                        curr_piece.rotation =
+                        curr_piece.rotation - 1 % len(curr_piece.shape)
+
                 if event.key == pygame.K_DOWN:
+                    # moves piece down
                     curr_piece.y += 1
                     if not(valid_space(curr_piece, grid)):
                         curr_piece.y -= 1
-
-                if event.key == pygame.K_UP:
-                    curr_piece.rotation += 1
-                    if not(valid_space(curr_piece, grid)):
-                        curr_piece.rotation -= 1
 
     shape_positions = convert_shape_format(curr_piece)
 
