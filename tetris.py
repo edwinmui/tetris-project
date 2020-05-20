@@ -1,4 +1,5 @@
-import pygame
+import pygame, sys
+from pygame.locals import *
 import random
 
 # creating the data structure for pieces
@@ -26,6 +27,7 @@ PLAY_HEIGHT = 600  # meaning 600 // 20 = 20 height per block
 BLOCK_SIZE = 30
 GRID_HEIGHT = 20    # the max valid height of a grid
 GRID_WIDTH = 10     # the max valid width of a grid
+EMPTY_SQUARE = (0, 0, 0)    # tuple representing an empty block of a grid
 
 top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
 top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
@@ -177,14 +179,14 @@ def create_grid(locked_positions={}):
                 2D array of colors meant to represent a Tetris grid
     """
     # creates a blank grid
-    grid = [ [(0, 0, 0) for col in range(GRID_WIDTH)]
+    grid = [ [EMPTY_SQUARE for col in range(GRID_WIDTH)]
                         for row in range(GRID_HEIGHT) ]
     # looks through grid and checks if key exists in each slot
     for row in range(get_grid_height(grid)):
         for col in range(get_grid_width(grid)):
             if (col, row) in locked_positions:
                 c = locked_positions[(col, row)]
-                grid[row][col] = c                                                # POSSIBLE BUG!!!!! FIX LATER
+                grid[row][col] = c                                              
     return grid
 
 def convert_shape_format(shape):
@@ -199,7 +201,7 @@ def convert_shape_format(shape):
     # figures out the current rotation of the shape
     shape_format = shape.shape[shape.rotation % get_num_shape_rotates(shape)]
 
-    # iterates through every line of shape and executes based on
+    # iterates through every line of shape
     for x, line in enumerate(shape_format):
         row = list(line)
         for y, col in enumerate(row):
@@ -222,7 +224,7 @@ def valid_space(shape, grid):
     """
     # creates a list of all accepted positions
     accepted_pos = [ [(col, row) for col in range(get_grid_width(grid)) 
-                                if grid[row][col] == (0, 0, 0)]
+                                if grid[row][col] == EMPTY_SQUARE]
                             for row in range(get_grid_height(grid)) ]
     # flattens out the above 2D list into a 1D list that can iterated over
     accepted_pos = [col for sub in accepted_pos for col in sub]
@@ -275,18 +277,41 @@ def draw_grid(surface, grid):
                     (sx + col * BLOCK_SIZE, sy),
                     (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT))
 
-
-
-
 def clear_rows(grid, locked):
-    pass
-
-
-
+    """
+    MODIFIES: grid, locked
+    EFFECTS:  Removes all rows of the grid that are full, 
+              meaning no empty squares exist
+    """
+    deleted_rows = 0
+    # goes through every row starting from bottom of grid
+    for y in range(get_grid_height(grid)-1, -1, -1):
+        row = grid[y]
+        # checks if there are any empty squares within the row
+        if (0, 0, 0) not in row:
+            deleted_rows += 1
+            deleted_index = y
+            # if no empty squares, tries to delete every block within row
+            for x in range(len(row)):
+                try:
+                    del locked_grid[(x, y)]
+                except:
+                    continue
+    
+    # if there are rows that need to be deleted
+    if deleted_rows > 0:
+        # goes through the entire locked positions dictionary backwards
+        for key in sorted(list(locked), key=lambda x:x[1], reverse = True):
+            x, y = key
+            # if row is above the deleted row, shift it down 
+            if y < deleted_index:
+                # updates locked positions with the shifted key
+                new_key = (x, y + deleted_index)
+                locked[new_key] = locked.pop(key)
 
 def draw_next_shape(shape, surface):
     """
-    EFFECTS: Shows the upcoming piece in the top right corner of the screen
+    EFFECTS: Shows the upcoming piece on the right side of the screen
     """
     font = pygame.font.SysFont('centurygothic', 30)
     # displays text indicating next shape area
@@ -314,7 +339,7 @@ def draw_next_shape(shape, surface):
 
 def draw_window(surface, grid):
     # fills the surface with blank RGB values
-    surface.fill(0, 0, 0)
+    surface.fill(BLACK)
 
     pygame.font.init()
     font = pygame.font.SysFont('centurygothic', 60)
@@ -335,10 +360,11 @@ def draw_window(surface, grid):
     # creates a red border around the play area
     pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
                         PLAY_WIDTH, PLAY_HEIGHT), 4)
-    # updates the screen
-    pygame.display.update()
 
 def main(win):
+    """
+        REQUIRES: win is a valid pygame surface that can be drawn on
+    """
     global grid
 
     locked_positions = {}   # format e.g. "(x, y):(255, 0, 0)"
@@ -425,7 +451,12 @@ def main(win):
         next_piece = get_shape()
         change_piece = False
 
+    # draw the game window
     draw_window(win, grid)
+    # draws the next shape on the right side of screen
+    draw_next_shape(next_piece, win)
+    #updates the screen
+    pygame.display.update()
 
     # check if user lost
     if check_lost(locked_positions):
