@@ -277,7 +277,7 @@ def draw_grid(surface, grid):
                     (sx + col * BLOCK_SIZE, sy),
                     (sx + col * BLOCK_SIZE, sy + PLAY_HEIGHT))
 
-def clear_rows(grid, locked):
+def clear_rows(grid, locked_positions):
     """
     MODIFIES: grid, locked
     EFFECTS:  Removes all rows of the grid that are full, 
@@ -294,20 +294,21 @@ def clear_rows(grid, locked):
             # if no empty squares, tries to delete every block within row
             for x in range(len(row)):
                 try:
-                    del locked_grid[(x, y)]
+                    del locked_positions[(x, y)]
                 except:
                     continue
     
     # if there are rows that need to be deleted
     if deleted_rows > 0:
         # goes through the entire locked positions dictionary backwards
-        for key in sorted(list(locked), key=lambda x:x[1], reverse = True):
+        for key in sorted(list(locked_positions), 
+                                            key=lambda x:x[1], reverse = True):
             x, y = key
             # if row is above the deleted row, shift it down 
             if y < deleted_index:
                 # updates locked positions with the shifted key
                 new_key = (x, y + deleted_index)
-                locked[new_key] = locked.pop(key)
+                locked_positions[new_key] = locked_positions.pop(key)
 
 def draw_next_shape(shape, surface):
     """
@@ -450,6 +451,8 @@ def main(win):
         #updates the next piece and change piece bool
         next_piece = get_shape()
         change_piece = False
+        # checks if any rows need to be cleared
+        clear_rows(grid, locked_positions)
 
     # draw the game window
     draw_window(win, grid)
