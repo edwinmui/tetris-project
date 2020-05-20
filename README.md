@@ -12,3 +12,7 @@ Nothing yet.
 
 Pull requests are most certainly welcome. Feel free to play around with the game
 and explore different ways to improve it!
+
+## References
+
+Inspired by @techwithtim!
