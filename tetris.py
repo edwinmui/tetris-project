@@ -348,6 +348,22 @@ def draw_next_shape(shape, surface):
     TITLE_UP_OFFSET = 30
     surface.blit(label, (sx + TITLE_RIGHT_OFFSET, sy - TITLE_UP_OFFSET))
 
+
+
+def update_score(new_score):
+    # reads the new score
+    with open('scores.txt', 'r') as r_file:
+        lines = r_file.read_lines()
+        old_score =lines[0].strip()
+
+    # updates score if new scores is higher than old score
+    with open('scores.txt', 'w') as w_file:
+        if int(new_score) > int(old_score):
+            w_file.write(str(new_score))
+        else:
+            w_file.write(str(old_score))
+
+
 def draw_window(surface, grid, score=0):
     # fills the surface with blank RGB values
     surface.fill(BLACK)
@@ -380,6 +396,7 @@ def draw_window(surface, grid, score=0):
     # creates a red border around the play area
     pygame.draw.rect(surface, (255, 0, 0), (top_left_x, top_left_y,
                         PLAY_WIDTH, PLAY_HEIGHT), 4)
+
 
 def main(win):
     """
@@ -503,6 +520,7 @@ def main(win):
         pygame.display.update()
         pygame.time.delay(MILLISECOND * 2)
         run = False
+        update_score(score)
                     
 def main_menu(win):
     START_FONT_SIZE = 60
