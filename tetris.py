@@ -505,7 +505,25 @@ def main(win):
         run = False
                     
 def main_menu(win):
-    main(win)
+    START_FONT_SIZE = 60
+    run = True
+    while run:
+        # starts with black screen and start-game prompt
+        win.fill(BLACK)
+        draw_text_middle("Press Any Key to Start", START_FONT_SIZE, WHITE, win)
+        pygame.display.update()
+        for event in pygame.event.get():
+            # quits game if user quits
+            if event.type == pygame.QUIT:
+                run = False
+            # if users presses a key, plays game
+            if event.type == pygame.KEYDOWN:
+                main(win)
+
+    pygame.display.quit()
+
+
+
 
 win = pygame.display.set_mode((S_WIDTH, S_HEIGHT))
 pygame.display.set_caption('Tetris')
