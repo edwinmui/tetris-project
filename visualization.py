@@ -4,7 +4,7 @@ from pygame.locals import *
 def main():
     pygame.init()
 
-    DISPLAY=pygame.display.set_mode((500,400),0,32)
+    DISPLAY=pygame.display.set_mode((800,700),0,32)
 
     WHITE=(255,255,255)
     BLUE=(0,0,255)

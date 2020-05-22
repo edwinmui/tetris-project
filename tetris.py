@@ -258,8 +258,15 @@ def get_shape():
     # returns a random shape
     return Piece(MIDDLE_GRID_X, TOP_GRID_Y, random.choice(shapes))
 
-def draw_text_middle(text, size, color, surface):  
-    pass
+def draw_text_middle(text, size, color, surface): 
+    """
+    MODIFIES: surface
+    EFFECTS:  Draws the provided text in the middle of the screen
+    """ 
+    font = pygame.font.SysFont("centurygothic", size, bold = True)
+    label = font.render(text, 1, color)
+    surface.blit(label, (top_left_x + PLAY_WIDTH/2 - label.get_width()/2, 
+    top_left_y + PLAY_HEIGHT/2 - label.get_height()/2))
    
 def draw_grid(surface, grid):
     # draws the gridlines onto the window
@@ -283,13 +290,13 @@ def clear_rows(grid, locked_positions):
     EFFECTS:  Removes all rows of the grid that are full, 
               meaning no empty squares exist
     """
-    deleted_rows = 0
+    cleared_rows = 0
     # goes through every row starting from bottom of grid
     for y in range(get_grid_height(grid)-1, -1, -1):
         row = grid[y]
         # checks if there are any empty squares within the row
         if (0, 0, 0) not in row:
-            deleted_rows += 1
+            cleared_rows += 1
             deleted_index = y
             # if no empty squares, tries to delete every block within row
             for x in range(len(row)):
@@ -299,7 +306,7 @@ def clear_rows(grid, locked_positions):
                     continue
     
     # if there are rows that need to be deleted
-    if deleted_rows > 0:
+    if cleared_rows > 0:
         # goes through the entire locked positions dictionary backwards
         for key in sorted(list(locked_positions), 
                                             key=lambda x:x[1], reverse = True):
@@ -309,6 +316,9 @@ def clear_rows(grid, locked_positions):
                 # updates locked positions with the shifted key
                 new_key = (x, y + deleted_index)
                 locked_positions[new_key] = locked_positions.pop(key)
+
+    # returns the number of rows the player clears
+    return cleared_rows
 
 def draw_next_shape(shape, surface):
     """
@@ -338,16 +348,25 @@ def draw_next_shape(shape, surface):
     TITLE_UP_OFFSET = 30
     surface.blit(label, (sx + TITLE_RIGHT_OFFSET, sy - TITLE_UP_OFFSET))
 
-def draw_window(surface, grid):
+def draw_window(surface, grid, score=0):
     # fills the surface with blank RGB values
     surface.fill(BLACK)
 
+    # draws the Tetris label at top of screen
     pygame.font.init()
     font = pygame.font.SysFont('centurygothic', 60)
     label = font.render('Tetris', 1, (255, 255, 255))
-
-    # gets to the middle of the grid
     surface.blit(label, (top_left_x + PLAY_WIDTH/2 - (label.get_width()/2), 30))
+
+    # draws the score on the right size of screen
+    font = pygame.font.SysFont('centurygothic', 30)
+    label2 = font.render('Score' + str(score), 1, WHITE)
+    #offset constants to make the next shape look better
+    SHAPE_RIGHT_OFFSET = 70
+    SHAPE_DOWN_OFFSET = 60    
+    sx = top_left_x + PLAY_WIDTH + SHAPE_RIGHT_OFFSET
+    sy = top_left_y + PLAY_HEIGHT/2 + SHAPE_DOWN_OFFSET
+    surface.blit(label2, (sx, sy))
 
     # draws the rectangles on the surface
     for row in range(get_grid_height(grid)):
@@ -376,6 +395,11 @@ def main(win):
     next_piece = get_shape()
     clock = pygame.time.Clock()
     fall_time = 0
+    level_time = 0
+    score = 0
+    INCREASE_LEVEL = 5      # num seconds before increasing fall speed
+    MAX_SPEED = 0.12        # the maximum speed a block can fall
+    INCREASE_SPEED = 0.005      # the amount of speed a block is incr. by / lvl
     MILLISECOND = 1000
 
     # continues to run the game untl the user quits
@@ -384,9 +408,20 @@ def main(win):
         # updates the grid based on prev locked positions of tetris blocks
         grid = create_grid(locked_positions)
         fall_time += clock.get_rawtime()
+        level_time += clock.get_rawtime()
         clock.tick()
 
+        # increases fall speed as game progresses
+        if level_time/MILLISECOND > INCREASE_LEVEL:
+            # resets level tracker
+            level_time = 0
+            # the threshold for highest speed a block can attain
+            if level_time > MAX_SPEED:
+                level_time -= INCREASE_SPEED
+
+        # makes blocks fall down the screen
         if fall_time / MILLISECOND > fall_speed:
+            # resets fall time tracker
             fall_time = 0
             curr_piece.y += 1
             # checks if falling piece hits bottom or another piece
@@ -451,20 +486,23 @@ def main(win):
         #updates the next piece and change piece bool
         next_piece = get_shape()
         change_piece = False
-        # checks if any rows need to be cleared
-        clear_rows(grid, locked_positions)
+        # checks if any rows need to be cleared and adds to total score
+        score += clear_rows(grid, locked_positions) * 10
 
     # draw the game window
-    draw_window(win, grid)
+    draw_window(win, grid, score)
     # draws the next shape on the right side of screen
     draw_next_shape(next_piece, win)
     #updates the screen
     pygame.display.update()
 
-    # check if user lost
+    # if user LOST
     if check_lost(locked_positions):
+        YOU_LOST_FONT_SIZE = 80
+        draw_text_middle('YOU LOST!', YOU_LOST_FONT_SIZE, WHITE, win)
+        pygame.display.update()
+        pygame.time.delay(MILLISECOND * 2)
         run = False
-
                     
 def main_menu(win):
     main(win)
