@@ -1,7 +1,30 @@
 import pygame, sys
+from grid import get_grid_height
 """
 Game class
 """
+
+# GLOBALS VARS
+S_WIDTH = 800
+S_HEIGHT = 700
+PLAY_WIDTH = 300  # meaning 300 // 10 = 30 width per block
+PLAY_HEIGHT = 600  # meaning 600 // 20 = 20 height per block
+BLOCK_SIZE = 30
+GRID_HEIGHT = 20    # the max valid height of a grid
+GRID_WIDTH = 10     # the max valid width of a grid
+EMPTY_SQUARE = (0, 0, 0)    # tuple representing an empty block of a grid
+
+top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
+top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
+
+RED = (255,0,0)
+GREEN = (0,255,0)
+BLUE = (0,0,255)
+DARK_BLUE = (0,0,128)
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+PINK = (255,200,200)
+GREY = (120, 120, 120)
 
 def check_lost(positions):
     """
