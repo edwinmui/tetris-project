@@ -1,7 +1,11 @@
-import pygame, sys
+import pygame
+import sys
 from grid import get_grid_height
+
 """
-Game class
+                                GAME FILE
+Contains all functions necessary to handle core game logic such as checking if
+the user loses, tracking the previous highest score , etc.
 """
 
 # GLOBALS VARS
@@ -17,14 +21,15 @@ EMPTY_SQUARE = (0, 0, 0)    # tuple representing an empty block of a grid
 top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
 top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
 
-RED = (255,0,0)
-GREEN = (0,255,0)
-BLUE = (0,0,255)
-DARK_BLUE = (0,0,128)
-WHITE = (255,255,255)
-BLACK = (0,0,0)
-PINK = (255,200,200)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+DARK_BLUE = (0, 0, 128)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+PINK = (255, 200, 200)
 GREY = (120, 120, 120)
+
 
 def check_lost(positions):
     """
@@ -39,11 +44,13 @@ def check_lost(positions):
             return True
     return False
 
+
 def max_score():
     with open('scores.txt', 'r') as r_file:
         lines = r_file.readlines()
         score = lines[0].strip()
     return score
+
 
 def update_score(new_score):
     # obtains the current highest score
@@ -55,6 +62,7 @@ def update_score(new_score):
             w_file.write(str(new_score))
         else:
             w_file.write(str(old_score))
+
 
 def clear_rows(grid, locked_positions):
     """
@@ -76,14 +84,14 @@ def clear_rows(grid, locked_positions):
                     del locked_positions[(x, y)]
                 except:
                     continue
-    
+
     # if there are rows that need to be deleted
     if cleared_rows > 0:
         # goes through the entire locked positions dictionary backwards
-        for key in sorted(list(locked_positions), 
-                                            key=lambda x:x[1], reverse = True):
+        for key in sorted(list(locked_positions),
+                          key=lambda x: x[1], reverse=True):
             x, y = key
-            # if row is above the deleted row, shift it down 
+            # if row is above the deleted row, shift it down
             if y < deleted_index:
                 # updates locked positions with the shifted key
                 new_key = (x, y + deleted_index)
