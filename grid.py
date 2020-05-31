@@ -34,20 +34,12 @@ top_left_x = (S_WIDTH - PLAY_WIDTH) // 2    # 250
 top_left_y = S_HEIGHT - PLAY_HEIGHT         # 100
 
 
-def get_grid_width(grid):
-    # returns the width of the grid
-    return len(grid[0])
-
-
-def get_grid_height(grid):
-    # returns the length of the grid
-    return len(grid)
-
-
 def create_grid(locked_positions={}):
     """ 
     EFFECTS: Creates and returns a newly constructed grid, which is a 
                 2D array of colors meant to represent a Tetris grid
+                Blank grids are filled with empty squares, or (0, 0, 0)'s
+            ex: grid = [x][y] = [#rows][#cols]
     """
     # creates a blank grid
     grid = [[EMPTY_SQUARE for col in range(GRID_WIDTH)]
@@ -60,6 +52,15 @@ def create_grid(locked_positions={}):
                 grid[row][col] = c
     return grid
 
+
+def get_grid_width(grid):
+    # returns the width of the grid
+    return len(grid[0])
+
+
+def get_grid_height(grid):
+    # returns the length of the grid
+    return len(grid)
 
 def valid_space(shape, grid):
     """

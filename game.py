@@ -67,8 +67,9 @@ def update_score(new_score):
 def clear_rows(grid, locked_positions):
     """
     MODIFIES: grid, locked
-    EFFECTS:  Removes all rows of the grid that are full, 
-              meaning no empty squares exist
+    EFFECTS:  Removes all rows of the grid that are full based on locked 
+              positions, meaning no empty squares exist, and returns the number 
+              of rows cleared
     """
     cleared_rows = 0
     # goes through every row starting from bottom of grid

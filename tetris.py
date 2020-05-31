@@ -19,8 +19,8 @@ def main(win):
     """
     global grid
 
-    locked_positions = {}   # format e.g. "(x, y):(255, 0, 0)"
-    grid = create_grid(locked_positions)
+    locked_positions = {}   # format e.g. "(x, y):(255, 0, 0) = (row, col):(255, 0, 0)"
+    grid = create_grid(locked_positions)    # format e.g. "grid = [x][y] = [row][col]""
 
     change_piece = False
     run = True
